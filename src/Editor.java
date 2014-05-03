@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.FileNotFoundException;
 
 /**
  * Created by Lingfu on 5/2/14.
@@ -6,7 +7,7 @@ import java.io.File;
 public interface Editor {
 
 //  Take the destination and save the result image
-    public void output(File output);
+    public void output(File output) throws FileNotFoundException;
 
 //  For every pixel of the image, inverse the color value
 //    eg. the minimum value is 0 and maximum value is 255,

@@ -2,6 +2,7 @@
   <dictionary name="Lingfu">
     <words>
       <w>grayscale</w>
+      <w>motionblur</w>
     </words>
   </dictionary>
 </component>

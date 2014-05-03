@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -8,13 +10,21 @@ import java.util.Scanner;
  * Created by Lingfu on 5/2/14.
  */
 public class Image {
-    private Map pixels = new HashMap();
+    private Map<String, Pixel> pixels = new HashMap<String, Pixel>();
     private int height = -1;
     private int width = -1;
     private int maxValue = -1;
     private final String MAGIC_NUMBER = "P3";
 
-    public Image parseFromFile(File input) throws FileNotFoundException {
+    public Image() {
+
+    }
+
+    public Image(File input) throws FileNotFoundException {
+        parseFromFile(input);
+    }
+
+    private void parseFromFile(File input) throws FileNotFoundException {
         Scanner scanner = new Scanner(input);
 
         String firstToken = "";
@@ -30,16 +40,17 @@ public class Image {
         parseHeader(scanner);
         createImage(scanner);
 
-        return this;
     }
 
+    //initialize pixels
     private void createImage(Scanner scanner) {
         if (!scanner.hasNext()) {
             System.out.println("Error: Missing pixels.");
+            return;
         } else {
             String current = "";
-            for (int i=0; i<height; i++) {
-                for (int j=0; j<width; j++) {
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
                     String coordinate = Integer.toString(j) + Integer.toString(i);
 
                     int red = Integer.parseInt(scanner.next());
@@ -48,7 +59,7 @@ public class Image {
                     current = skipComment(scanner);
                     int blue = Integer.parseInt(current);
 
-                    Pixel pixel = new Pixel(red, green, blue, maxValue);
+                    Pixel pixel = new Pixel(red, green, blue);
 
                     pixels.put(coordinate, pixel);
                 }
@@ -57,6 +68,7 @@ public class Image {
 
     }
 
+    //Set height, width, and max color value
     private void parseHeader(Scanner scanner) {
         String current = skipComment(scanner);
         if (current != null){
@@ -81,6 +93,7 @@ public class Image {
             current = scanner.next();
         } else {
             System.out.println("Error: File ends unexpectedly.");
+            return null;
         }
 
         final String POND = "#";
@@ -95,5 +108,32 @@ public class Image {
         } else {
             return current;
         }
+    }
+
+    public Image invert() {
+        for (Map.Entry<String, Pixel> pixelEntry: pixels.entrySet()) {
+            String currentKey = pixelEntry.getKey();
+            Pixel currentValue = pixelEntry.getValue();
+
+            currentValue.invert(maxValue);
+
+            pixels.put(currentKey, currentValue);
+        }
+        return this;
+    }
+
+    public void output(File output) throws FileNotFoundException {
+        PrintWriter writer = new PrintWriter(output);
+
+        writer.print( MAGIC_NUMBER + "\n");
+        writer.print( width + " " + height + "\n");
+        writer.print( maxValue + "\n");
+
+        for (Map.Entry<String, Pixel> pixelEntry: pixels.entrySet()) {
+            Pixel currentPixel = pixelEntry.getValue();
+            writer.print(currentPixel);
+        }
+
+        writer.close();
     }
 }

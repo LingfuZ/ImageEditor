@@ -1,6 +1,5 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Scanner;
 
 /**
  * Created by Lingfu on 5/2/14.
@@ -9,11 +8,11 @@ public class ImageEditor implements Editor {
     private Image image = new Image();
 
     public ImageEditor(File input) throws FileNotFoundException {
-        image = image.parseFromFile(input);
+        image = new Image(input);
     }
 
     public void invert() {
-
+        image = image.invert();
     }
 
     public void grayscale() {
@@ -28,8 +27,8 @@ public class ImageEditor implements Editor {
 
     }
 
-    public void output(File output) {
-
+    public void output(File output) throws FileNotFoundException{
+        image.output(output);
     }
 
 }
