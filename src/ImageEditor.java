@@ -12,19 +12,19 @@ public class ImageEditor implements Editor {
     }
 
     public void invert() {
-        image = image.invert();
+        image.invert();
     }
 
     public void grayscale() {
-
+        image.grayscale();
     }
 
     public void emboss() {
-
+        image.emboss();
     }
 
     public void blur(int range) {
-
+        image.blur(range);
     }
 
     public void output(File output) throws FileNotFoundException{
