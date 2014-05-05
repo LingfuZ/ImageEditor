@@ -59,20 +59,18 @@ public class Pixel {
         setBlue(DEFAULT_EMBOSS_VALUE);
     }
 
-    public void emboss(int maxValue, int minValue, Pixel upperLeft) {
+    public Pixel emboss(int maxValue, int minValue, Pixel upperLeft) {
         int redDifference = getRed() - upperLeft.getRed();
         int greenDifference = getGreen() - upperLeft.getGreen();
         int blueDifference = getBlue() - upperLeft.getBlue();
 
         int maxDifference = findMaxDifference(redDifference, greenDifference, blueDifference);
 
-        int temp = DEFAULT_EMBOSS_VALUE + maxDifference;
+        int colorValue = DEFAULT_EMBOSS_VALUE + maxDifference;
 
-        temp = setBound(temp, maxValue, minValue);
+        colorValue = setBound(colorValue, maxValue, minValue);
 
-        setRed(temp);
-        setGreen(temp);
-        setBlue(temp);
+        return new Pixel(colorValue, colorValue, colorValue);
 
     }
 
@@ -85,7 +83,7 @@ public class Pixel {
         }
         return v;
     }
-//TODO: test this method for all cases
+
     private int findMaxDifference(int redDiff, int greenDiff, int blueDiff) {
         int redAbs = Math.abs(redDiff);
         int greenAbs = Math.abs(greenDiff);
@@ -118,10 +116,10 @@ public class Pixel {
         return 0;
     }
 
-    public void blur (List<Pixel> pixels){
-        int redSum = getRed();
-        int greenSum = getGreen();
-        int blueSum = getBlue();
+    public Pixel blur (List<Pixel> pixels){
+        int redSum = 0;
+        int greenSum = 0;
+        int blueSum = 0;
 
         for(Pixel pixel: pixels) {
             redSum += pixel.getRed();
@@ -129,13 +127,11 @@ public class Pixel {
             blueSum += pixel.getBlue();
         }
 
-        int redAverage = redSum/(pixels.size()+1);
-        int greenAverage = greenSum/(pixels.size()+1);
-        int blueAverage = blueSum/(pixels.size()+1);
+        int redAverage = redSum/(pixels.size());
+        int greenAverage = greenSum/(pixels.size());
+        int blueAverage = blueSum/(pixels.size());
 
-        setRed(redAverage);
-        setGreen(greenAverage);
-        setBlue(blueAverage);
+        return new Pixel(redAverage, greenAverage, blueAverage);
     }
 
     public String toString() {

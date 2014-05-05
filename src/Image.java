@@ -7,12 +7,14 @@ import java.util.*;
  * Created by Lingfu on 5/2/14.
  */
 public class Image {
+
+    private static final int MIN_VALUE = 0;
+    private static final String MAGIC_NUMBER = "P3";
+
     private Map<Coordinate, Pixel> pixels = new HashMap<Coordinate, Pixel>();
     private int height = -1;
     private int width = -1;
     private int maxValue = -1;
-    private static final int MIN_VALUE = 0;
-    private static final String MAGIC_NUMBER = "P3";
 
     public Image() {
 
@@ -25,7 +27,7 @@ public class Image {
     private void parseFromFile(File input) throws FileNotFoundException {
         Scanner scanner = new Scanner(input);
 
-        String firstToken = "";
+        String firstToken;
         if (!scanner.hasNext()) {
             System.out.println("Error: Empty file.");
         }
@@ -45,7 +47,6 @@ public class Image {
     private void createImage(Scanner scanner) {
         if (!scanner.hasNext()) {
             System.out.println("Error: Missing pixels.");
-            return;
         } else {
             String current = "";
             for (int i = 0; i < height; i++) {
@@ -141,13 +142,15 @@ public class Image {
 //                call pixel.emboss(maxValue, upperLeftPixel)
 //        update value for current pair
 
+        Map<Coordinate, Pixel> newPixels = new HashMap<Coordinate, Pixel>();
+
         for (Map.Entry<Coordinate, Pixel>pixelEntry: pixels.entrySet()) {
             Coordinate currentKey = pixelEntry.getKey();
             Pixel currentValue = pixelEntry.getValue();
 
             if (currentKey.isOutOfBound()) {
                 currentValue.emboss();
-                pixels.put(currentKey, currentValue);
+                newPixels.put(currentKey, currentValue);
             } else {
                 int left = currentKey.getX()-1;
                 int upper = currentKey.getY()-1;
@@ -159,11 +162,34 @@ public class Image {
 //                    System.out.println("Error: null pointer for upper left pixel.");
 //                }
 
-                currentValue.emboss(maxValue, MIN_VALUE, upperLeftPixel);
+                Pixel newPixel = currentValue.emboss(maxValue, MIN_VALUE, upperLeftPixel);
 
-                pixels.put(currentKey, currentValue);
+                newPixels.put(currentKey, newPixel);
             }
         }
+
+        this.setPixels(newPixels);
+    }
+
+    private Image clone(Image image) {
+        Image newImage = new Image();
+
+        newImage.setHeight(image.getHeight());
+        newImage.setWidth(image.getWidth());
+        newImage.setMaxValue(image.getMaxValue());
+
+        Map<Coordinate, Pixel> newPixels = new HashMap<Coordinate, Pixel>();
+        for (Map.Entry<Coordinate, Pixel> pixelEntry: image.getPixels().entrySet()) {
+            Coordinate currentKey = pixelEntry.getKey();
+            Pixel currentValue = pixelEntry.getValue();
+
+            newPixels.put(currentKey, currentValue);
+
+        }
+
+        newImage.setPixels(newPixels);
+
+        return newImage;
     }
 
     public void blur(int range) {
@@ -172,6 +198,7 @@ public class Image {
             range = width;
         }
 
+        Map<Coordinate, Pixel> newPixels = new HashMap<Coordinate, Pixel>();
         for (Map.Entry<Coordinate, Pixel>pixelEntry: pixels.entrySet()) {
             Coordinate currentKey = pixelEntry.getKey();
             Pixel currentValue = pixelEntry.getValue();
@@ -179,9 +206,10 @@ public class Image {
             List<Pixel> selectedPixels = new ArrayList<Pixel>();
             int currentX = currentKey.getX();
             int currentY = currentKey.getY();
-            for (int i=1; i<range-1; i++) {
+
+            for (int i=0; i<range; i++) {
                 int x = currentX + i;
-                if (x <= width) {
+                if (x < width) {
                     Coordinate nextCoor = new Coordinate(x, currentY);
                     Pixel nextPixel = pixels.get(nextCoor);
 
@@ -189,9 +217,49 @@ public class Image {
                 }
             }
 
-            currentValue.blur(selectedPixels);
-            pixels.put(currentKey, currentValue);
+            Pixel newPixel = currentValue.blur(selectedPixels);
+
+            for (int i=0; i<selectedPixels.size(); i++) {
+                int x = currentX + i;
+                Coordinate nextCoordinate = new Coordinate(x, currentY);
+                newPixels.put(nextCoordinate, newPixel);
+            }
         }
+
+        this.setPixels(newPixels);
+
+    }
+
+    private Map<Coordinate, Pixel> getPixels() {
+        return pixels;
+    }
+
+    private int getHeight() {
+        return height;
+    }
+
+    private int getWidth() {
+        return width;
+    }
+
+    private int getMaxValue() {
+        return maxValue;
+    }
+
+    public void setMaxValue(int maxValue) {
+        this.maxValue = maxValue;
+    }
+
+    public void setPixels(Map<Coordinate, Pixel> pixels) {
+        this.pixels = pixels;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
     }
 
     public void output(File output) throws FileNotFoundException {
