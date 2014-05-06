@@ -20,6 +20,13 @@ public class Image {
 
     }
 
+    public Image(Map<Coordinate, Pixel> pixels, int width, int height, int maxValue) {
+        setPixels(pixels);
+        setWidth(width);
+        setHeight(height);
+        setMaxValue(maxValue);
+    }
+
     public Image(File input) throws FileNotFoundException {
         parseFromFile(input);
     }
@@ -149,8 +156,9 @@ public class Image {
             Pixel currentValue = pixelEntry.getValue();
 
             if (currentKey.isOutOfBound()) {
-                currentValue.emboss();
-                newPixels.put(currentKey, currentValue);
+                Pixel newPixel = new Pixel();
+                newPixel.emboss();
+                newPixels.put(currentKey, newPixel);
             } else {
                 int left = currentKey.getX()-1;
                 int upper = currentKey.getY()-1;
@@ -224,10 +232,92 @@ public class Image {
                 Coordinate nextCoordinate = new Coordinate(x, currentY);
                 newPixels.put(nextCoordinate, newPixel);
             }
+
+//            //For pass off error
+//            Pixel bug = new Pixel(0, 63, 31);
+//            if (currentX == 1 && currentY == 1) {
+//                System.out.println("The size of selected pixels: " + selectedPixels.size());
+//                for (int j=0; j< width; j++) {
+//                    Coordinate next = new Coordinate(j, currentY);
+//                    Pixel original = pixels.get(next);
+//
+//                    System.out.println("Pixel at (x, y) : (" + next.getX() + ", " + next.getY()
+//                            + ") has original value {" + original.getRed() + ", "
+//                            + original.getGreen() + ", " + original.getBlue() + ")");
+//                    System.out.println();
+//                }
+//                for (int j=0; j< width; j++) {
+//                    Coordinate next = new Coordinate(j, currentY);
+//                    Pixel modified = newPixels.get(next);
+//
+//                    System.out.println("Pixel at (x, y) : (" + next.getX() + ", " + next.getY()
+//                            + ") has modified value {" + modified.getRed() + ", "
+//                            + modified.getGreen() + ", " + modified.getBlue() + ")");
+//                    System.out.println();
+//                }
+//            }
         }
 
         this.setPixels(newPixels);
 
+    }
+
+//    public void testEmboss() {
+//        Map<Coordinate, Pixel> testPixels = new HashMap<Coordinate, Pixel>();
+//
+//        Coordinate upperLeftCoordinate = new Coordinate(0, 6);
+//        Pixel upperLeftPixel = new Pixel(121, 69, 22);
+//
+//        Coordinate coordinate = new Coordinate(1, 7);
+//        Pixel pixel = new Pixel(122, 68, 22);
+//
+//        testPixels.put(upperLeftCoordinate, upperLeftPixel);
+//        testPixels.put(coordinate, pixel);
+//
+//        Image testImage = new Image(testPixels, 10, 10, 255);
+//        testImage.emboss();
+//
+//        System.out.println(testImage);
+//    }
+
+    public void testBlur() {
+        Coordinate coordinate0 = new Coordinate(0, 1);
+        Coordinate coordinate1 = new Coordinate(1, 1);
+        Coordinate coordinate2 = new Coordinate(2, 1);
+        Coordinate coordinate3 = new Coordinate(3, 1);
+
+        Pixel pixel0 = new Pixel(0, 0, 0);
+        Pixel pixel1 = new Pixel(0, 255, 127);
+        Pixel pixel2 = new Pixel(0, 0, 0);
+        Pixel pixel3 = new Pixel(0, 0, 0);
+
+        Map<Coordinate, Pixel> testPixels = new HashMap<Coordinate, Pixel>();
+        testPixels.put(coordinate0, pixel0);
+        testPixels.put(coordinate1, pixel1);
+        testPixels.put(coordinate2, pixel2);
+        testPixels.put(coordinate3, pixel3);
+
+        Image testImage = new Image(testPixels, 4, 4, 255);
+        testImage.blur(10);
+
+        System.out.println(testImage);
+    }
+
+    @Override
+    public String toString() {
+        String result = "Width: " + getWidth() + "\n";
+        result += "Height: " + getHeight() + "\n";
+        for (Map.Entry<Coordinate, Pixel>pixelEntry: getPixels().entrySet()) {
+            Coordinate currentKey = pixelEntry.getKey();
+            Pixel currentValue = pixelEntry.getValue();
+
+            result += "Pixel at x:" + currentKey.getX() + " y: " + currentKey.getY() + "\n";
+            result += "Pixel value is (" + currentValue.getRed() + ", " + currentValue.getGreen()
+                    + ", " + currentValue.getBlue() + ").\n";
+
+        }
+
+        return result;
     }
 
     private Map<Coordinate, Pixel> getPixels() {

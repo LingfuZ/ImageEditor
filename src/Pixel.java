@@ -8,6 +8,10 @@ public class Pixel {
     private int green = -1;
     private int blue = -1;
 
+    public Pixel() {
+
+    }
+
     public Pixel(int red, int green, int blue) {
         setRed(red);
         setGreen(green);
@@ -26,15 +30,15 @@ public class Pixel {
         blue = value;
     }
 
-    private int getRed() {
+    public int getRed() {
         return this.red;
     }
 
-    private int getGreen() {
+    public int getGreen() {
         return this.green;
     }
 
-    private int getBlue() {
+    public int getBlue() {
         return this.blue;
     }
 
@@ -127,13 +131,14 @@ public class Pixel {
             blueSum += pixel.getBlue();
         }
 
-        int redAverage = redSum/(pixels.size());
-        int greenAverage = greenSum/(pixels.size());
-        int blueAverage = blueSum/(pixels.size());
+        int redAverage = redSum/pixels.size();
+        int greenAverage = greenSum/pixels.size();
+        int blueAverage = blueSum/pixels.size();
 
         return new Pixel(redAverage, greenAverage, blueAverage);
     }
 
+    @Override
     public String toString() {
         String result = getRed() + "\n";
         result += getGreen() + "\n";
@@ -142,4 +147,28 @@ public class Pixel {
         return result;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj == this) {
+            return true;
+        }
+
+        if (!(obj instanceof Pixel)){
+            return false;
+        }
+
+        Pixel other = (Pixel) obj;
+        if (getRed() == other.getRed()
+                && getGreen() == other.getGreen()
+                && getBlue() == other.getBlue()) {
+            return true;
+        }
+
+        return false;
+
+    }
 }

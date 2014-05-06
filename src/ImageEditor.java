@@ -31,6 +31,9 @@ public class ImageEditor implements Editor {
         image.output(output);
     }
 
+//    public void testEmboss() { image.testEmboss(); }
+    public void testBlur() {image.testBlur(); }
+
     public static void main(String[] args) {
         final String USAGE_STATMENT = "USAGE: java ImageEditor in-file out-file " +
                 "(grayscale|invert|emboss|motionblur motion-blur-range)";
@@ -72,6 +75,9 @@ public class ImageEditor implements Editor {
             }
 
             imageEditor.output(output);
+
+//            imageEditor.testEmboss();
+//            imageEditor.testBlur();
 
         } catch (Exception e) {
             System.out.println(USAGE_STATMENT);
